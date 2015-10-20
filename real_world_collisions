@@ -1,0 +1,140 @@
+
+float redX, redY, bluX, bluY;
+float redDX, redDY, bluDX, bluDY;
+float ballDia;
+float redA, bluA;
+float redM, bluM;
+float poolT, poolB;
+float poolL, poolR;
+
+void setup(){
+  size(1000,700);
+  rectMode(CORNERS);
+  
+  redX=width/4;
+  redY=height/2;
+  redDX=10;
+  redDY=-15;
+  redM=3;    //Magnitude of movement
+  redA=0;    //Angle of movement
+  
+  bluX=(width-(width/4));
+  bluY=height/2;
+  bluDX=0;   
+  bluDY=0;    
+  bluA=0;    //Angle of movement
+  bluM=0;    //Magnitude of movement
+  
+  poolT=height/4;
+  poolB=height - 20;
+  poolL=20;
+  poolR=width - 20;
+  
+  ballDia=100;
+  
+  
+  
+  
+}
+
+
+void draw(){
+  scene();
+  balls();
+  wallBounce();
+  collisions();
+  movement();
+  
+  
+}
+
+
+void scene(){ //pool table, background
+  noStroke();
+  background(#DE7B02); fill(0,150,0);
+  rect(poolL,poolT,poolR,poolB);
+}
+
+void balls(){ //to the wall
+  fill(255,0,0); //red
+  ellipse(redX,redY,ballDia,ballDia);
+  
+  fill(0,0,255); //blu
+  ellipse(bluX,bluY,ballDia,ballDia);
+  
+}
+
+
+void wallBounce(){  //the bounce of balls from the walls
+  //Red
+  if(redX < poolL + ballDia/2 || redX > poolR - ballDia/2) redDX *= -1;
+  if(redY > poolB - ballDia/2 || redY < poolT + ballDia/2) redDY *= -1;
+  
+  //Blu
+  if(bluX < poolL + ballDia/2 || bluX > poolR - ballDia/2) bluDX *= -1;
+  if(bluY > poolB - ballDia/2 || bluY < poolT + ballDia/2) bluDY *= -1;
+}
+
+void collisions(){  //currently detecting collisions of balls is ok, trying to work out how to make them collide "correctly".
+                    //the easy way is too easy for me. using it as a backup
+                    //easy way: when the balls collide, switch DX and DY of the balls
+  if(dist(redX,redY,bluX,bluY) < ballDia){ //statement detecting if the balls have collided
+    translate(redX,redY);
+    rotate(atan2(bluY-redY,bluX-redX));
+    rect(0,0,1000,2);                      //mapping the angle from center red to center blu WHEN the balls collide
+    rotate(-atan2(bluY-redY,bluX-redX));
+    translate(-redX,-redY);
+  }
+}
+
+void movement(){
+  //vvvvv RED MOVEMENT vvvvv
+  redX += redDX;
+  redY += redDY;
+  redA = atan2(redDY,redDX);    //calculating angle of movement
+  redM = sqrt((redDY * redDY)+(redDX * redDX));    //calculating magnitude of movement
+  //vvvvv Movement line for red vvvvvv
+  translate(redX,redY); fill(0);
+  rotate(redA);
+  rect(0,0,redM*100,2);    
+  rotate(-redA);
+  translate(-redX,-redY);
+  
+  //vvvvv BLU MOVEMENT vvvvv
+  bluX += bluDX;    
+  bluY += bluDY;
+  bluA = atan2(bluDY,bluDX);    //calculating angle of movement in radians
+  bluM = sqrt((bluDY * bluDY)+(bluDX * bluDX));    //calculating magnitude of movement a^2+b^2=c^2
+  //vvvvv Movement line for blu vvvvvv
+  translate(bluX,bluY); fill(0);
+  rotate(bluA);
+  rect(0,0,bluM*100,2);    //Movement line for blu
+  rotate(-bluA);
+  translate(-bluX,-bluY);
+  
+  /*--stroke(0);
+  line(redX,redY,bluX,bluY); //line from center red to center blu
+  noStroke();
+  --*/
+}
+
+
+void keyPressed(){
+  if(key =='a')redDX -= .25;
+  if(key =='d')redDX += .25;      //for testing
+  if(key =='w')redDY -= .25;
+  if(key =='s')redDY += .25;
+  if(key =='x'){
+    redDY *= 0;
+    redDX *= 0;
+  }
+  
+  if(key =='j')bluDX -= .25;
+  if(key =='l')bluDX += .25;
+  if(key =='i')bluDY -= .25;
+  if(key =='k')bluDY += .25;
+  if(key =='m'){
+    bluDY *= 0;
+    bluDX *= 0;
+  }
+}
